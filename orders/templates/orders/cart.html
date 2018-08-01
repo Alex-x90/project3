@@ -1,0 +1,32 @@
+{% extends "orders/layout.html" %}
+
+{% block body %}
+    <div>
+        Currently logged in as: {{ user.username }}
+        <br>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+    <!-- A 1x1 pixel that loads in order to run some javascript only on this page -->
+    <img onload="displayCart();" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
+
+    <br>
+    <table class="table table-striped">
+        <thead>
+            <th scope="col">Item</th>
+            <th scope="col">Size</th>
+            <th scope="col">Price</th>
+            <th scope="col">Toppings/Add-ons</th>
+        </thead>
+        <tbody class="insert">
+        </tbody>
+    </table>
+
+    <h2 class="empty"></h2>
+
+    <br>
+    <a href="{% url 'index' %}">Back</a>
+    <button class="btn btn-info" onclick="empty();">Empty cart</button>
+    <button class="btn btn-info" onclick="buy({{ user.username }});">Purchase</button>
+
+{% endblock %}

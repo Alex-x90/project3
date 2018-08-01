@@ -1,0 +1,84 @@
+{% extends "orders/layout.html" %}
+
+{% block body %}
+
+    {% if not user %}
+    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'register' %}">Register</a>
+    <br>
+    {% endif %}
+
+    {% if user %}
+    <div>
+        Currently logged in as: {{ user.username }}
+        <br>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+    <div class="cart">
+        <a class="btn btn-info" href="{% url 'cart' %}">Shopping Cart</a>
+    </div>
+    <br>
+    {% endif %}
+
+<table class="table table-striped">
+    <thead>
+        <th scope="col">Item</th>
+        <th scope="col">Small</th>
+        <th scope="col">Large</th>
+        {% if user %}
+            <th scope="col">Toppings</th>
+            <th scope="col">Add to cart</th>
+            <th></th>
+        {% endif %}
+    </thead>
+    <tbody>
+{% for menu_item in menu_items %}
+    <tr>
+        <th scope="row">{{ menu_item.item }}</th>
+        <td>
+            {% if menu_item.price_small is not none %}
+                ${{ menu_item.price_small|floatformat:2 }}
+            {% endif %}
+        </td>
+        <td>${{ menu_item.price_large|floatformat:2 }}</td>
+        {% if user %}
+
+            <td>
+
+            {% if menu_item.num_toppings >= 1 %}
+                    <select id="a{{menu_item.id}}_1">
+                        {% for topping in toppings %}
+                            <option value="{{topping.topping}}">{{topping.topping}}</option>
+                        {% endfor %}
+                    </select>
+            {% endif %}
+            {% if menu_item.num_toppings >= 2 %}
+                    <select id="a{{menu_item.id}}_2">
+                        {% for topping in toppings %}
+                            <option value="{{topping.topping}}">{{topping.topping}}</option>
+                        {% endfor %}
+                    </select>
+            {% endif %}
+            {% if menu_item.num_toppings >= 3 %}
+                    <select id="a{{menu_item.id}}_3">
+                        {% for topping in toppings %}
+                            <option value="{{topping.topping}}">{{topping.topping}}</option>
+                        {% endfor %}
+                    </select>
+            {% endif %}
+
+            </td>
+
+            {% if menu_item.price_small is not none %}
+                <td><button class="btn btn-info add" value="{{ menu_item.id }}" data-itemName="{{menu_item.item}}" data-size="small" data-cost="{{ menu_item.price_small|floatformat:2 }}">Add small to cart</button></td>
+                {% else %}
+                <td></td>
+            {% endif %}
+            <td><button class="btn btn-info add" value="{{ menu_item.id }}" data-itemName="{{menu_item.item}}" data-size="large" data-cost="{{ menu_item.price_large|floatformat:2 }}">Add large to cart</button> </td>
+        {% endif %}
+    </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
