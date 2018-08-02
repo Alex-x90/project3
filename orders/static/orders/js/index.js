@@ -1,10 +1,12 @@
 function empty(){
+    //empties the user's cart
     localStorage.setItem("order", null);
     displayCart();
     document.querySelector('.insert').innerHTML='';
 }
 
 function buy(user){
+    //sends the user's order to the server for it to store
     var totalCost = document.querySelector("#totalCost").value;
     var r = confirm("Are you sure you want to do this? Your total is $" + totalCost.toFixed(2));
     if (r == true) {
@@ -25,11 +27,12 @@ function buy(user){
         request.setRequestHeader("X-CSRFToken", csrftoken);
         request.send(formData);
 
-
+        window.location.assign("/");
     }
 }
 
 function displayCart(){
+    //puts the users data on the page when they view their cart
     var order = JSON.parse(localStorage.getItem("order"));
     if (!order)
     {
@@ -112,8 +115,8 @@ function displayCart(){
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    //sets up all the buttons to order different items
     var buttons = document.querySelectorAll('.add'), i;
-
     for (i = 0; i < buttons.length; ++i) {
         let button = buttons[i];
         button.onclick = () => {
@@ -162,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+//creates a csrf token
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {

@@ -27,10 +27,10 @@
                 {% endif %}
             {% endfor %}
         {% endfor %}
-
-
     </tbody>
 </table>
-
+{% if not order_list %}
+    <h2 class="empty">There are currently no orders.</h2>
+{% endif %}
 
 {% endblock %}

@@ -10,7 +10,7 @@ import json
 import time
 from django_ajax.decorators import ajax
 
-# Create your views here.
+# renders the main page
 def index(request):
     if not request.user.is_authenticated:
         context = {
@@ -29,6 +29,7 @@ def index(request):
     }
     return render(request, "orders/user.html", context)
 
+# sign-up page
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -43,6 +44,7 @@ def signup(request):
         form = UserCreationForm()
     return render(request, "orders/signup.html", {'form': form})
 
+# log in page
 def login_view(request):
     username = request.POST.get("username")
     password = request.POST.get("password")
@@ -53,15 +55,24 @@ def login_view(request):
     else:
         return render(request, "orders/login.html", {"message": "Invalid credentials."})
 
+# log out page
 def logout_view(request):
     logout(request)
     return render(request, "orders/login.html", {"message": "Logged out."})
 
+# checks if the user is logged in. if they are renders their cart. If they aren't loads the menu and sends a message
 def cart(request):
     if not request.user.is_authenticated:
-        return render(request, "orders/login.html", {"message": None})
+        context = {
+            "user": None,
+            "menu_items": menu_items.objects.all(),
+            "toppings": toppings.objects.all(),
+            "message": "You must be logged in to view your cart."
+        }
+        return render(request, "orders/user.html", context)
     return render(request, "orders/cart.html")
 
+# gets the user's order from javascript and stores it to the database
 def store_order(request):
     if request.method == "POST":
         currentOrder = json.loads(request.POST.get('input'))
@@ -75,7 +86,8 @@ def store_order(request):
                     if not 'topping3' in x:
                         db_order.toppings += " and "
                     else:
-                        db_order.toppings += ", " + x['topping2']
+                        db_order.toppings += ", "
+                    db_order.toppings += x['topping2']
                     if 'topping3' in x:
                         db_order.toppings += ", and " + x['topping3']
             else:
@@ -83,16 +95,9 @@ def store_order(request):
             db_order.user = user
             db_order.items = x['itemName']
             db_order.save()
+        # redirect is done in javascript so no return is needed
 
-        time.sleep(.3)
-        context = {
-            "user": request.user,
-            "menu_items": menu_items.objects.all(),
-            "toppings": toppings.objects.all(),
-            "message": "Your order was proccessed successfuly."
-        }
-        return render(request, "orders/user.html", context)
-
+# if the user has permision renders the page with all the orders
 def order(request):
     if request.user.is_superuser:
         context = {
@@ -107,4 +112,3 @@ def order(request):
             "message": "You don't have permission to view that!"
         }
         return render(request, "orders/user.html", context)
-
