@@ -10,3 +10,8 @@ class menu_items(models.Model):
 
 class toppings(models.Model):
     topping = models.CharField(max_length=64)
+
+class orders(models.Model):
+    user = models.CharField(max_length=64)
+    items = models.CharField(max_length=64)
+    toppings = models.CharField(max_length=64)

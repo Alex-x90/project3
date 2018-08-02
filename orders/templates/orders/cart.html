@@ -27,6 +27,6 @@
     <br>
     <a href="{% url 'index' %}">Back</a>
     <button class="btn btn-info" onclick="empty();">Empty cart</button>
-    <button class="btn btn-info" onclick="buy({{ user.username }});">Purchase</button>
+    <button class="btn btn-info" onclick="buy('{{ user.username }}');">Purchase</button>
 
 {% endblock %}

@@ -20,6 +20,14 @@
     <br>
     {% endif %}
 
+    {% if message %}
+    <br>
+    <div class="alert alert-secondary" role="alert">
+          {{message}}
+    </div>
+    {% endif %}
+
+
 <table class="table table-striped">
     <thead>
         <th scope="col">Item</th>
@@ -70,11 +78,11 @@
             </td>
 
             {% if menu_item.price_small is not none %}
-                <td><button class="btn btn-info add" value="{{ menu_item.id }}" data-itemName="{{menu_item.item}}" data-size="small" data-cost="{{ menu_item.price_small|floatformat:2 }}">Add small to cart</button></td>
+                <td><button class="btn btn-info add" value="{{ menu_item.id }}" data-item_name="{{menu_item.item}}" data-size="small" data-cost="{{ menu_item.price_small|floatformat:2 }}">Add small to cart</button></td>
                 {% else %}
                 <td></td>
             {% endif %}
-            <td><button class="btn btn-info add" value="{{ menu_item.id }}" data-itemName="{{menu_item.item}}" data-size="large" data-cost="{{ menu_item.price_large|floatformat:2 }}">Add large to cart</button> </td>
+            <td><button class="btn btn-info add" value="{{ menu_item.id }}" data-item_name="{{menu_item.item}}" data-size="large" data-cost="{{ menu_item.price_large|floatformat:2 }}">Add large to cart</button> </td>
         {% endif %}
     </tr>
 {% endfor %}

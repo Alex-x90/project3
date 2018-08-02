@@ -1,4 +1,36 @@
 {% extends "orders/layout.html" %}
 
 {% block body %}
+
+<h1>Orders</h1>
+<br>
+
+<table class="table table-striped">
+    <thead>
+        <th scope="col">User</th>
+        <th scope="col">Items</th>
+        <th scope="col">Toppings</th>
+    </thead>
+    <tbody>
+        {% regroup orders by user as order_list %}
+
+        {% for order in order_list %}
+        <tr>
+        <th scope="row">{{ order.grouper }}</th>
+            {% for item in order.list %}
+                <td>{{ item.items }}</td>
+                <td>{{ item.toppings }}</td>
+                </tr>
+                {% if not forloop.last %}
+                <tr>
+                <th scope="row"></th>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+
+
+    </tbody>
+</table>
+
+
 {% endblock %}

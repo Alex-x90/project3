@@ -4,9 +4,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.views import logout,login
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
-from orders.models import menu_items, toppings
+from orders.models import menu_items, toppings, orders
 from django.utils.safestring import mark_safe
 import json
+import time
+from django_ajax.decorators import ajax
 
 # Create your views here.
 def index(request):
@@ -14,14 +16,16 @@ def index(request):
         context = {
         "user": None,
         "menu_items": menu_items.objects.all(),
-        "toppings": toppings.objects.all()
+        "toppings": toppings.objects.all(),
+        "message":None
     }
         return render(request,"orders/user.html",context)
     else:
         context = {
         "user": request.user,
         "menu_items": menu_items.objects.all(),
-        "toppings": toppings.objects.all()
+        "toppings": toppings.objects.all(),
+        "message":None
     }
     return render(request, "orders/user.html", context)
 
@@ -57,3 +61,50 @@ def cart(request):
     if not request.user.is_authenticated:
         return render(request, "orders/login.html", {"message": None})
     return render(request, "orders/cart.html")
+
+def store_order(request):
+    if request.method == "POST":
+        currentOrder = json.loads(request.POST.get('input'))
+        user = request.POST.get('user')
+
+        for x in currentOrder:
+            db_order = orders.objects.create()
+            if 'topping1' in x:
+                db_order.toppings += x['topping1']
+                if 'topping2' in x:
+                    if not 'topping3' in x:
+                        db_order.toppings += " and "
+                    else:
+                        db_order.toppings += ", " + x['topping2']
+                    if 'topping3' in x:
+                        db_order.toppings += ", and " + x['topping3']
+            else:
+                db_order.toppings = "None"
+            db_order.user = user
+            db_order.items = x['itemName']
+            db_order.save()
+
+        time.sleep(.3)
+        context = {
+            "user": request.user,
+            "menu_items": menu_items.objects.all(),
+            "toppings": toppings.objects.all(),
+            "message": "Your order was proccessed successfuly."
+        }
+        return render(request, "orders/user.html", context)
+
+def order(request):
+    if request.user.is_superuser:
+        context = {
+            "orders": orders.objects.all()
+        }
+        return render(request, "orders/orders.html", context)
+    else:
+        context = {
+            "user": request.user,
+            "menu_items": menu_items.objects.all(),
+            "toppings": toppings.objects.all(),
+            "message": "You don't have permission to view that!"
+        }
+        return render(request, "orders/user.html", context)
+

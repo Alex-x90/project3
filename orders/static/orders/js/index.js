@@ -5,7 +5,28 @@ function empty(){
 }
 
 function buy(user){
-    chatSocket.send(localStorage.getItem("order"),{"user":user});
+    var totalCost = document.querySelector("#totalCost").value;
+    var r = confirm("Are you sure you want to do this? Your total is $" + totalCost.toFixed(2));
+    if (r == true) {
+
+        var formData = new FormData();
+
+        order = JSON.stringify(JSON.parse(localStorage.getItem("order")));
+        formData.append("input",order);
+
+        formData.append("user",user);
+
+        empty();
+
+        var csrftoken = getCookie('csrftoken');
+
+        var request = new XMLHttpRequest();
+        request.open("POST", "/store_order");
+        request.setRequestHeader("X-CSRFToken", csrftoken);
+        request.send(formData);
+
+
+    }
 }
 
 function displayCart(){
@@ -26,7 +47,6 @@ function displayCart(){
         topping1 = temp["topping1"];
         topping2 = temp["topping2"];
         topping3 = temp["topping3"];
-        console.log(itemName);
 
         totalCost += cost;
 
@@ -68,11 +88,11 @@ function displayCart(){
         document.querySelector("#a"+i).append(html);
     }
 
-    var row = document.createElement('tr');
+    row = document.createElement('tr');
     row.id="b";
     document.querySelector('.insert').append(row);
 
-    var html = document.createElement('th');
+    html = document.createElement('th');
     html.innerHTML = "Total Cost:";
     html.scope = "row";
     document.querySelector("#b").append(html);
@@ -81,6 +101,8 @@ function displayCart(){
         document.querySelector("#b").append(html);
 
     html = document.createElement('td');
+    html.value = totalCost;
+    html.id = "totalCost";
     html.innerHTML = "$"+totalCost.toFixed(2);
     document.querySelector("#b").append(html);
 
@@ -89,10 +111,6 @@ function displayCart(){
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    var chatSocket = new WebSocket(
-        'ws://' + window.location.host +
-        '/ws/chat/');
 
     var buttons = document.querySelectorAll('.add'), i;
 
@@ -108,8 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const cost = button.dataset.cost;
             const item = button.value;
-            const itemName = button.dataset.itemName;
-            console.log(itemName);
+            const itemName = button.dataset.item_name;
             const size = button.dataset.size;
 
             try{
@@ -144,3 +161,19 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 });
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
